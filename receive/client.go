@@ -138,8 +138,6 @@ func (p *Client) Start() {
 			continue
 		}
 
-		go p.requestQuote()
-
 		select {
 		case <-ctx.Done():
 			cancel()
@@ -222,6 +220,7 @@ func (p *Client) handleResult(ctx context.Context, cancel context.CancelFunc) {
 		switch msg.Operate {
 		case OpLoginReply: // 登陆响应
 			log.Infoln("handleResult login ok")
+			go p.requestQuote()
 			continue
 		case OpHeartbeatReply:
 			log.Infoln("handleResult rev heatbeat reply ok")
@@ -231,6 +230,7 @@ func (p *Client) handleResult(ctx context.Context, cancel context.CancelFunc) {
 			p.sendRequest(NewMessage(OpHeartbeatReply, nil))
 			continue
 		default:
+			log.Infoln("handleResult rev message", ToString(msg.Data))
 			p.resultChan <- msg
 		}
 
