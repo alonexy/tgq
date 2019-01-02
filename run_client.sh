@@ -1,2 +1,2 @@
 cd ./client/websocket/
-go run main.go
+go run -mod=vendor main.go
