@@ -4,17 +4,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>client demo</title>
+      <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="http://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
     <script src="client.js"></script>
     <script>
       var client = new MyClient({
         notify: function(data) {
-		  console.log(data);
+		  // console.log(data);
           // alert(JSON.stringify(data));
         }
       });
     </script>
+    <script>
+        $(document).ready(function(){
+            var box = $('#box');
+            dt = box.DataTable({
+                paging: false,
+                ordering: false,
+                info: false,
+                searching: false,
+                scrollY: "500px",
+                scrollCollapse: true,
+            });
+            s = ["XAUUSD", "AUDUSD", "GBPUSD", "EURJPY", "GBPJPY", "GBPNZD", "XAGUSD", "USDJPY"];
+            s.forEach(function(v,i){
+                var rowNode = dt.row.add([v,'','','']).draw(true).node();
+                $(rowNode).attr('id', v);
+                // $("#box tbody").prepend('<tr id="'+v+'"><td>'+v+'</td><td id="'+v1+'"></td><td id="'+v2+'"></td><td  id="'+v3+'"></td></tr>');
+            })
+        });
+    </script>
     <style type="text/css">
         span{ display:block;}
+        tr { align:center;}
     </style>
   </head>
   <body>
@@ -23,6 +46,16 @@
     <h2>status:</h2>
     <span id="status"></span>
     <h2>message:</h2>
-    <div id="box"></div>
+    <table id="box">
+        <thead>
+            <th>Symbol</th>
+            <th>BID</th>
+            <th>ASK</th>
+            <th>Time</th>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    </div>
   </body>
 </html>

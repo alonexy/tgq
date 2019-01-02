@@ -13,11 +13,66 @@
         this.createConnect(MAX_CONNECT_TIMES, DELAY);
     }
 
+
     var appendMsg = function(text) {
-        var span = document.createElement("SPAN");
-        var text = document.createTextNode(text);
-        span.appendChild(text);
-        document.getElementById("box").appendChild(span);
+        quoteRows = []
+        quote = JSON.parse(text);
+        if (quote.Code == "success") {
+            var b = $('#box').DataTable({
+                paging: false,
+                ordering: false,
+                info: false,
+                searching: false,
+                destroy:true
+            });
+            Result = quote.Result;
+            // console.log(quote)
+            symbol = Result[0];
+            ask = Result[1];
+            bid = Result[2];
+            time = formatUnixtimestamp(Result[4] - 60*60*8);
+            cAsk = $('#'+symbol).children('td').eq(2).text();
+            cBid = $('#'+symbol).children('td').eq(1).text();
+
+            dc = ask-bid;
+            cdc = cAsk-cBid;
+            // console.log(cAsk,ask)
+            if (dc > cdc) {
+                $('#'+symbol).children("td:gt(0)").css("color","red");
+            } else {
+                $('#'+symbol).children("td:gt(0)").css("color","blue");
+            }
+            // if (ask > cAsk) {
+            //     $('#'+symbol).children('td').eq(1).css("color","red")
+            // } else {
+            //     $('#'+symbol).children('td').eq(1).css("color","green")
+            // }
+            // if (bid > cBid) {
+            //     $('#'+symbol).children('td').eq(2).css("color","red")
+            // } else {
+            //     $('#'+symbol).children('td').eq(2).css("color","green")
+            // }
+            b.row($('#'+symbol)).data([symbol, bid, ask, time]);
+        }
+
+        // var span = document.createElement("SPAN");console.log("messageReceived:", "ver=" + ver, "body=" + body);
+        // var text = document.createTextNode(text);
+        // span.appendChild(text);
+        // document.getElementById("box").appendChild(span);
+    }
+
+    function formatUnixtimestamp (unixtimestamp){
+        var unixtimestamp = new Date(unixtimestamp*1000);
+        var year = 1900 + unixtimestamp.getYear();
+        var month = "0" + (unixtimestamp.getMonth() + 1);
+        var date = "0" + unixtimestamp.getDate();
+        var hour = "0" + unixtimestamp.getHours();
+        var minute = "0" + unixtimestamp.getMinutes();
+        var second = "0" + unixtimestamp.getSeconds();
+        return year + "-" + month.substring(month.length-2, month.length)  + "-" + date.substring(date.length-2, date.length)
+            + " " + hour.substring(hour.length-2, hour.length) + ":"
+            + minute.substring(minute.length-2, minute.length) + ":"
+            + second.substring(second.length-2, second.length);
     }
 
     Client.prototype.createConnect = function(max, delay) {
@@ -46,7 +101,7 @@
                 var op = dataView.getInt32(opOffset);
                 var seq = dataView.getInt32(seqOffset);
 
-                console.log("receiveHeader: packetLen=" + packetLen, "headerLen=" + headerLen, "ver=" + ver, "op=" + op, "seq=" + seq);
+                // console.log("receiveHeader: packetLen=" + packetLen, "headerLen=" + headerLen, "ver=" + ver, "op=" + op, "seq=" + seq);
 
                 switch(op) {
                     case 8:
@@ -58,8 +113,8 @@
                     break;
                     case 3:
                         // receive a heartbeat from server
-                        console.log("receive: heartbeat");
-                        appendMsg("receive: heartbeat from server");
+                        // console.log("receive: heartbeat");
+                        // appendMsg("receive: heartbeat from server");
                     break;
                     default:
                         // batch message
@@ -71,7 +126,8 @@
                             var msgBody = textDecoder.decode(data.slice(offset+headerLen, offset+packetLen));
                             // callback
                             messageReceived(ver, msgBody);
-                            appendMsg("receive: ver=" + ver + " op=" + op + " seq=" + seq + " message=" + msgBody);
+                            // appendMsg("receive: ver=" + ver + " op=" + op + " seq=" + seq + " message=" + msgBody);
+                            appendMsg(msgBody);
                         }
                     break;
                 }
@@ -93,8 +149,8 @@
                 headerView.setInt32(opOffset, 2);
                 headerView.setInt32(seqOffset, 1);
                 ws.send(headerBuf);
-                console.log("send: heartbeat");
-                appendMsg("send: heartbeat to server");
+                // console.log("send: heartbeat");
+                // appendMsg("send: heartbeat to server");
             }
 
             function auth() {
@@ -115,7 +171,7 @@
             function messageReceived(ver, body) {
                 var notify = self.options.notify;
                 if(notify) notify(body);
-                console.log("messageReceived:", "ver=" + ver, "body=" + body);
+                // console.log("messageReceived:", "ver=" + ver, "body=" + body);
             }
 
             function mergeArrayBuffer(ab1, ab2) {
