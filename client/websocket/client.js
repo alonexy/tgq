@@ -34,8 +34,9 @@
             cAsk = $('#'+symbol).children('td').eq(2).text();
             cBid = $('#'+symbol).children('td').eq(1).text();
 
-            dc = ask-bid;
-            cdc = cAsk-cBid;
+
+            dc = ask - bid;
+            cdc = cAsk - cBid;
             // console.log(cAsk,ask)
             if (dc > cdc) {
                 $('#'+symbol).children("td:gt(0)").css("color","red");
@@ -54,11 +55,6 @@
             // }
             b.row($('#'+symbol)).data([symbol, bid, ask, time]);
         }
-
-        // var span = document.createElement("SPAN");console.log("messageReceived:", "ver=" + ver, "body=" + body);
-        // var text = document.createTextNode(text);
-        // span.appendChild(text);
-        // document.getElementById("box").appendChild(span);
     }
 
     function formatUnixtimestamp (unixtimestamp){
@@ -149,7 +145,7 @@
                 headerView.setInt32(opOffset, 2);
                 headerView.setInt32(seqOffset, 1);
                 ws.send(headerBuf);
-                // console.log("send: heartbeat");
+                console.log("send: heartbeat",headerBuf);
                 // appendMsg("send: heartbeat to server");
             }
 
