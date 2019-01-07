@@ -27,7 +27,7 @@ const (
 const (
 	rawHeaderLen = uint16(16)
 
-	heart        = 240 * time.Second
+	heart        = 3 * time.Second
 )
 
 // Proto proto.
@@ -128,8 +128,15 @@ func startClient(key int64) {
 		}
 		if proto.Operation == opAuthReply {
 			log.Printf("key:%d auth success", key)
-
-			//time.Sleep(time.Second * 3)
+			//hbProto := new(Proto)
+			//hbProto.Operation = opHeartbeat
+			//hbProto.Seq = seq
+			//hbProto.Body = nil
+			//if err = tcpWriteProto(wr, hbProto); err != nil {
+			//	log.Printf("key:%d tcpWriteProto() error(%v)", key, err)
+			//	return
+			//}
+			//time.Sleep(heart)
 		} else if proto.Operation == opHeartbeatReply {
 			log.Printf("key:%d receive heartbeat", key)
 			if err = conn.SetReadDeadline(time.Now().Add(heart + 60*time.Second)); err != nil {
@@ -177,18 +184,23 @@ func tcpReadProto(rd *bufio.Reader, proto *Proto) (err error) {
 	)
 	// read
 	if err = binary.Read(rd, binary.BigEndian, &packLen); err != nil {
+		log.Fatal("心跳"+err.Error())
 		return
 	}
 	if err = binary.Read(rd, binary.BigEndian, &headerLen); err != nil {
+		log.Fatal("headerLen"+err.Error())
 		return
 	}
 	if err = binary.Read(rd, binary.BigEndian, &proto.Ver); err != nil {
+		log.Fatal("Ver"+err.Error())
 		return
 	}
 	if err = binary.Read(rd, binary.BigEndian, &proto.Operation); err != nil {
+		log.Fatal("Operation"+err.Error())
 		return
 	}
 	if err = binary.Read(rd, binary.BigEndian, &proto.Seq); err != nil {
+		log.Fatal("Seq"+err.Error())
 		return
 	}
 	var (
