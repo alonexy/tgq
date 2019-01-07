@@ -145,7 +145,7 @@
                 headerView.setInt32(opOffset, 2);
                 headerView.setInt32(seqOffset, 1);
                 ws.send(headerBuf);
-                console.log("send: heartbeat",headerBuf);
+                // console.log("send: heartbeat",headerBuf);
                 // appendMsg("send: heartbeat to server");
             }
 
