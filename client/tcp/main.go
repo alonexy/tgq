@@ -27,7 +27,7 @@ const (
 const (
 	rawHeaderLen = uint16(16)
 
-	heart        = 3 * time.Second
+	heart        = 30 * time.Second
 )
 
 // Proto proto.
